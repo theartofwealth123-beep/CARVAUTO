@@ -5,9 +5,7 @@
 }
 
 * { box-sizing: border-box; }
-
 body { margin: 0; }
-
 a { color: inherit; }
 
 .container {
@@ -150,6 +148,7 @@ th {
   font-size: 12px;
   color: #666;
 }
+
 .kpi .value {
   font-size: 18px;
   font-weight: 700;
