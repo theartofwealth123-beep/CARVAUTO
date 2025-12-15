@@ -1,6 +1,7 @@
+cat > app/src/pages/ListingDetail.jsx <<'EOF'
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getListingDetail } from "../api.js";
+import { getListingDetail } from "../src/api.js";
 import FlagChips from "../components/FlagChips.jsx";
 
 function money(n) {
@@ -82,9 +83,6 @@ export default function ListingDetail() {
           <div style={{ marginTop: 8 }}>
             <FlagChips listing={l} />
           </div>
-          <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
-            VIN storage: masked + hash only (raw VIN not exposed in UI).
-          </div>
         </div>
 
         <div style={{ marginTop: 14 }}>
@@ -114,26 +112,8 @@ export default function ListingDetail() {
             <div className="muted" style={{ marginTop: 10 }}>No flags recorded.</div>
           )}
         </div>
-
-        <div className="card">
-          <div style={{ fontWeight: 700 }}>Images</div>
-          {state.images.length ? (
-            <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              {state.images.map(img => (
-                <a key={img.id} href={img.image_url} target="_blank" rel="noreferrer">
-                  <img
-                    src={img.image_url}
-                    alt="listing"
-                    style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 10, border: "1px solid #eee" }}
-                  />
-                </a>
-              ))}
-            </div>
-          ) : (
-            <div className="muted" style={{ marginTop: 10 }}>No images stored.</div>
-          )}
-        </div>
       </div>
     </div>
   );
 }
+EOF

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listMarkets } from "../api.js";
+import { listMarkets } from "../src/api.js";
 
 export default function Filters({ value, onChange, onApply, loading }) {
   const [markets, setMarkets] = useState([]);

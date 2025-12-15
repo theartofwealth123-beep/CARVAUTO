@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import "./styles.css";
-import BuyList from "./pages/BuyList.jsx";
-import ListingDetail from "./pages/ListingDetail.jsx";
+import BuyList from "../pages/BuyList.jsx";
+import ListingDetail from "../pages/ListingDetail.jsx";
 
 function AppShell() {
   return (

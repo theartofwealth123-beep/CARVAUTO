@@ -1,51 +1,65 @@
-import { getSupabase } from "./_supabase.js";
+const { getSupabase } = require("./_supabase");
 
-export async function handler(event) {
+exports.handler = async (event, context) => {
   try {
     const supabase = getSupabase();
-    const params = event.queryStringParameters || {};
-
-    const marketId = params.market_id || null;
-    const minPrice = params.min_price ? parseInt(params.min_price, 10) : null;
-    const maxPrice = params.max_price ? parseInt(params.max_price, 10) : null;
-    const minMiles = params.min_miles ? parseInt(params.min_miles, 10) : null;
-    const maxMiles = params.max_miles ? parseInt(params.max_miles, 10) : null;
-    const minScore = params.min_score ? parseInt(params.min_score, 10) : 0;
-
-    const includeUnknown = params.include_unknown === "true";
-    const includeRisk = params.include_risk === "true";
-
-    // Clean-title-only enforcement:
-    // Default is CLEAN only. You can explicitly include UNKNOWN/RISK for admin review.
-    let statuses = ["CLEAN"];
-    if (includeUnknown) statuses.push("UNKNOWN");
-    if (includeRisk) statuses.push("RISK");
+    const query = event.queryStringParameters || {};
 
     let q = supabase
-      .from("listings")
-      .select(
-        "id, listing_url, title, price, year, make, model, trim, mileage, market_id, title_status, deal_score, confidence, plate_detected, vin_text_detected, vin_label_detected, expected_spread, target_buy_private, target_buy_wholesale"
-      )
-      .in("title_status", statuses)
-      .order("deal_score", { ascending: false })
-      .limit(200);
+      .from('listings')
+      .select(`
+        id, market_id, listing_url, title, price, location_text,
+        year, make, model, trim, mileage, title_status, deal_score,
+        vin_masked, plate_detected, vin_label_detected, vin_text_detected
+      `)
+      .order('deal_score', { ascending: false });
 
-    if (marketId) q = q.eq("market_id", marketId);
-    if (minPrice !== null) q = q.gte("price", minPrice);
-    if (maxPrice !== null) q = q.lte("price", maxPrice);
-    if (minMiles !== null) q = q.gte("mileage", minMiles);
-    if (maxMiles !== null) q = q.lte("mileage", maxMiles);
-    if (minScore) q = q.gte("deal_score", minScore);
+    if (query.market_id) {
+      q = q.eq('market_id', query.market_id);
+    }
 
-    const { data, error } = await q;
+    if (query.min_score) {
+      q = q.gte('deal_score', parseInt(query.min_score));
+    }
+
+    if (query.min_price) {
+      q = q.gte('price', parseInt(query.min_price));
+    }
+
+    if (query.max_price) {
+      q = q.lte('price', parseInt(query.max_price));
+    }
+
+    if (query.min_miles) {
+      q = q.gte('mileage', parseInt(query.min_miles));
+    }
+
+    if (query.max_miles) {
+      q = q.lte('mileage', parseInt(query.max_miles));
+    }
+
+    let titleStatuses = ['CLEAN'];
+    if (query.include_unknown === 'true') {
+      titleStatuses.push('UNKNOWN');
+    }
+    if (query.include_risk === 'true') {
+      titleStatuses.push('RISK');
+    }
+    q = q.in('title_status', titleStatuses);
+
+    const { data, error } = await q.limit(100);
+
     if (error) throw error;
 
     return {
       statusCode: 200,
-      headers: { "content-type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ data })
     };
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: err.message || "Unknown error" }) };
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message })
+    };
   }
-}
+};

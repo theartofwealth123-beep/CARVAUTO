@@ -1,7 +1,8 @@
+cat > app/src/pages/BuyList.jsx <<'EOF'
 import React, { useEffect, useState } from "react";
 import Filters from "../components/Filters.jsx";
 import ListingsTable from "../components/ListingsTable.jsx";
-import { searchListings } from "../api.js";
+import { searchListings } from "../src/api.js";
 
 export default function BuyList() {
   const [filters, setFilters] = useState({
@@ -40,16 +41,10 @@ export default function BuyList() {
 
   return (
     <div className="grid" style={{ gap: 12 }}>
-      <Filters
-        value={filters}
-        onChange={setFilters}
-        onApply={runSearch}
-        loading={loading}
-      />
-
+      <Filters value={filters} onChange={setFilters} onApply={runSearch} loading={loading} />
       {error ? <div className="card" style={{ borderColor: "#f0caca" }}>{error}</div> : null}
-
       <ListingsTable listings={listings} />
     </div>
   );
 }
+EOF

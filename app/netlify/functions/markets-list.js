@@ -1,21 +1,24 @@
-import { getSupabase } from "./_supabase.js";
+const { getSupabase } = require("./_supabase");
 
-export async function handler() {
+exports.handler = async (event, context) => {
   try {
     const supabase = getSupabase();
     const { data, error } = await supabase
-      .from("markets")
-      .select("id, name, state, radius_miles")
-      .order("name", { ascending: true });
+      .from('markets')
+      .select('id, name, state')
+      .order('name');
 
     if (error) throw error;
 
     return {
       statusCode: 200,
-      headers: { "content-type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ data })
     };
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: err.message || "Unknown error" }) };
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message })
+    };
   }
-}
+};
